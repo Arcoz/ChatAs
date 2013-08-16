@@ -1,0 +1,127 @@
+package me.abChatAs.ArcozThaBawz;
+
+import java.util.logging.Logger;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class abChatAsMain extends JavaPlugin
+{
+  public final Logger logger = Logger.getLogger("Minecraft");
+
+  public void onEnable()
+  {
+    PluginDescriptionFile pdfFile = getDescription();
+    this.logger.info(" [chatAs] has been enabled!");
+    PluginManager pm = getServer().getPluginManager();
+
+    getServer().getPluginManager().addPermission(new Permissions().forcechatall);
+    getServer().getPluginManager().addPermission(new Permissions().forcechat);
+    getServer().getPluginManager().addPermission(new Permissions().allperm);
+  }
+
+  public void onDisable()
+  {
+    PluginDescriptionFile pdfFile = getDescription();
+    this.logger.info(" [chatAs] has been disabled!");
+
+    getServer().getPluginManager().removePermission(
+      new Permissions().forcechatall);
+    getServer().getPluginManager().removePermission(
+      new Permissions().forcechat);
+    getServer().getPluginManager().removePermission(
+      new Permissions().allperm);
+  }
+
+  public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
+  {
+    Player player = (Player)sender;
+    CommandSender p = sender;
+    String dontPermitted = ChatColor.RED + "[" + ChatColor.GOLD + "chatAs" + ChatColor.RED + "] " + ChatColor.RED + "You don't have permissions for this!";
+    String prefix = ChatColor.RED + "[" + ChatColor.GOLD + "chatAs" + ChatColor.RED + "] ";
+    String besked = "";
+    if (commandLabel.equalsIgnoreCase("chatas")) {
+      if ((!sender.hasPermission(new Permissions().forcechat)) || (!sender.hasPermission(new Permissions().allperm)))
+      {
+        sender.sendMessage(dontPermitted);
+        return true;
+      }
+      if (((sender.hasPermission(new Permissions().forcechat)) || (sender.hasPermission(new Permissions().allperm))) && 
+        (args.length == 0)) {
+        sender.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "chatAs" + ChatColor.RESET + ChatColor.GOLD + " - Made by " + ChatColor.RED + "ArcozThaBawz " + ChatColor.GOLD + "[v" + ChatColor.RED + "1.0" + ChatColor.GOLD + "]");
+        sender.sendMessage(ChatColor.RED + "/chatas <player> <message>" + ChatColor.GOLD + " - " + ChatColor.GRAY + "Makes a specific player chat");
+        sender.sendMessage(ChatColor.RED + "/chatas * <message>" + ChatColor.GOLD + " - " + ChatColor.GRAY + "Makes everyone on the server chat");
+        return true;
+      }
+
+      if (args[0].equals("*")) {
+        if ((sender.hasPermission(new Permissions().forcechatall)) || (sender.hasPermission(new Permissions().allperm))) {
+          if (args.length > 1) {
+            String message = "";
+            for (int x = 1; x < args.length; x++) {
+              if (x == args.length - 1)
+                message = message + args[x];
+              else {
+                message = message + args[x] + " ";
+              }
+            }
+
+            for (Player all : getServer().getOnlinePlayers()) {
+              all.chat(message);
+            }
+            return true;
+          }
+          sender.sendMessage(prefix + "/chatas * <Message>");
+          return false;
+        }
+
+        sender.sendMessage(prefix + "You don't have permissions for this!");
+        return true;
+      }
+
+    }
+
+    if ((!sender.hasPermission(new Permissions().forcechat)) || (!sender.hasPermission(new Permissions().allperm))) {
+      sender.sendMessage(dontPermitted);
+    }
+    if ((sender.hasPermission(new Permissions().forcechat)) || (sender.hasPermission(new Permissions().allperm))) {
+      if (args.length == 1) {
+        sender.sendMessage(prefix + "/chatas <player> <message>");
+        return true;
+      }
+      String targetPlayerName = args[0];
+      Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+      if (targetPlayer == null) {
+        if (!args[0].equals("*")) {
+          sender.sendMessage(prefix + "That player is not online");
+          return true;
+        }
+      }
+      else
+      {
+        if (args.length > 1) {
+          String message = "";
+          for (int x = 1; x < args.length; x++) {
+            if (x == args.length - 1)
+              message = message + args[x];
+            else {
+              message = message + args[x] + " ";
+            }
+          }
+
+          targetPlayer.chat(message);
+        }
+        return true;
+      }
+
+    }
+
+    return false;
+  }
+}
