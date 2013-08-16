@@ -1,0 +1,10 @@
+package me.abChatAs.ArcozThaBawz;
+
+import org.bukkit.permissions.Permission;
+
+public class Permissions
+{
+  public Permission allperm = new Permission("chatAs.*");
+  public Permission forcechat = new Permission("chatAs.Chat");
+  public Permission forcechatall = new Permission("chatAs.ChatAll");
+}
